@@ -18,7 +18,7 @@ export function HeroSection() {
   return (
     <main className="h-auto flex justify-center items-center mt-8 px-4 lg:px-0">
       <div className="flex flex-col lg:flex-row justify-center items-center space-y-8 lg:space-y-0 lg:space-x-8">
-        {/* Text section on the left for large screens, centered for mobile */}
+       
         <div className="text-center lg:text-right lg:w-[400px] lg:h-[276px]">
           <h1 className="text-3xl sm:text-5xl font-bold mb-4">
             Stay <br />
@@ -31,14 +31,14 @@ export function HeroSection() {
           </p>
         </div>
 
-        {/* Image in the middle, resized for mobile */}
+       
         <img
           src="https://res.cloudinary.com/dcbpjtd1r/image/upload/v1728449784/my-blog-post/xgfy0xnvyemkklcqodkg.jpg"
           alt="Person with a cat"
           className="h-[250px] sm:h-[350px] lg:h-[530px] object-cover rounded-lg shadow-lg lg:w-1/3 mx-4 mb-4 lg:mb-0"
         />
 
-        {/* Text section on the right for large screens, centered for mobile */}
+      
         <div className="text-center lg:text-left lg:w-[400px] lg:h-[284px]">
           <h2 className="text-lg sm:text-xl font-semibold mb-2">-Author</h2>
           <h3 className="text-xl sm:text-2xl font-bold mb-4">Thompson P.</h3>
