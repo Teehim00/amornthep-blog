@@ -9,6 +9,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { useState } from "react";
 
 function BlogCard({
   image,
@@ -60,19 +61,30 @@ function BlogCard({
 const categories = ["Highlight", "Cat", "Inspiration", "General"];
 
 function ArticleSection() {
+  const [buttonCategories, setButtonCategories] = useState("");
+  const [category, setCategory] = useState("Highlight");
+
   return (
     <>
       <div className="p-4 md:p-10 lg:p-20 w-full">
         <main className="w-full  mx-auto hidden md:block">
           <div>
             <h1 className="text-xl font-bold mb-4 px-4">Latest articles</h1>
-            <div className="bg-[#EFEEEB] px-4 py-4 md:py-3 md:rounded-sm flex flex-col space-y-4 md:flex-row md:items-center md:space-y-0 md:justify-between mb-10">
+            <div className="bg-[#DAD6D1] px-4 py-4 md:py-3 md:rounded-sm flex flex-col space-y-4 md:flex-row md:items-center md:space-y-0 md:justify-between mb-10">
               <div className="flex space-x-4 flex-row">
                 <div className="flex space-x-4 flex-row">
-                  {categories.map((label, index) => (
+                  {categories.map((label) => (
                     <Button
-                      key={index}
-                      className="px-4 py-3 transition-colors rounded-sm text-sm text-muted-foreground bg-[#EFEEEB] hover:bg-[#ffffff]"
+                      key={label}
+                      onClick={() =>
+                        buttonCategories !== label && setButtonCategories(label)
+                      }
+                      className={`"px-4 py-3 transition-colors rounded-sm text-sm "
+                      ${
+                        buttonCategories === label
+                        ? "bg-[#DAD6D1] text-[#43403B]" 
+                        : "bg-[#F0F0F0] hover:bg-[#D3D3D3] text-[#43403B]"
+                      }`}
                     >
                       {label}
                     </Button>
@@ -82,8 +94,8 @@ function ArticleSection() {
               <div className="relative w-[300px]">
                 <Input
                   type="text"
-                  placeholder="Search..."
-                  className="px-4 py-3 pr-10 border rounded-sm w-full"
+                  placeholder="Search"
+                  className="py-3 rounded-sm placeholder:text-muted-foreground focus-visible:ring-0 focus-visible:ring-offset-0 focus-visible:border-muted-foreground"
                 />
                 <div className="absolute inset-y-0 right-0 flex items-center pr-3">
                   <BiSearch className="text-gray-400" />
@@ -109,9 +121,13 @@ function ArticleSection() {
           </div>
 
           <div className="flex flex-col px-4 py-3 pl-3 pr-3">
-            <Select className="w-full">
+            <Select
+              value={category}
+              onValueChange={(value) => setCategory(value)}
+              className="w-full"
+            >
               <SelectTrigger>
-                <SelectValue placeholder="Theme" />
+                <SelectValue placeholder="Highlight" />
               </SelectTrigger>
               <SelectContent>
                 {categories.map((cat) => {
