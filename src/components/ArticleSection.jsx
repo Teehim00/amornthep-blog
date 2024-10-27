@@ -1,6 +1,8 @@
-import { blogPosts } from "../data/blogPosts";
+
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { useEffect, useState } from "react";
+import axios from "axios";
 import { BiSearch } from "react-icons/bi";
 import {
   Select,
@@ -9,7 +11,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { useState } from "react";
+
 
 function BlogCard({
   image,
@@ -63,6 +65,21 @@ const categories = ["Highlight", "Cat", "Inspiration", "General"];
 function ArticleSection() {
   const [buttonCategories, setButtonCategories] = useState("");
   const [category, setCategory] = useState("Highlight");
+  const [posts, setPosts] = useState([]);
+
+  useEffect(() => {
+    fetchPosts();
+  }, []);
+  const fetchPosts = async () => {
+    try {
+      const response = await axios.get(
+        `https://blog-post-project-api.vercel.app/posts`
+      );
+      setPosts(response.data.posts);
+    } catch (error) {
+      console.log(error);
+    }
+  };
 
   return (
     <>
@@ -82,8 +99,8 @@ function ArticleSection() {
                       className={`"px-4 py-3 transition-colors rounded-sm text-sm "
                       ${
                         buttonCategories === label
-                        ? "bg-[#DAD6D1] text-[#43403B]" 
-                        : "bg-[#F0F0F0] hover:bg-[#D3D3D3] text-[#43403B]"
+                          ? "bg-[#DAD6D1] text-[#43403B]"
+                          : "bg-[#F0F0F0] hover:bg-[#D3D3D3] text-[#43403B]"
                       }`}
                     >
                       {label}
@@ -142,18 +159,24 @@ function ArticleSection() {
           </div>
         </section>
 
-        <article className="grid grid-cols-1 md:grid-cols-2 gap-8 px-4 py-10 md:px-0 md:py-0">
-          {blogPosts.map((post) => (
-            <BlogCard
-              key={post.id}
-              image={post.image}
-              category={post.category}
-              title={post.title}
-              description={post.description}
-              author={post.author}
-              date={post.date}
-            />
-          ))}
+        <article className="grid grid-cols-1 md:grid-cols-2 gap-8 px-4 md:px-0">
+          {posts.map((blog, index) => {
+            return (
+              <BlogCard
+                key={index}
+                image={blog.image}
+                category={blog.category}
+                title={blog.title}
+                description={blog.description}
+                author={blog.author}
+                date={new Date(blog.date).toLocaleDateString("en-GB", {
+                  day: "numeric",
+                  month: "long",
+                  year: "numeric",
+                })}
+              />
+            );
+          })}
         </article>
       </div>
     </>
