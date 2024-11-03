@@ -294,7 +294,6 @@ function CreateAccountModal({ dialogState, setDialogState }) {
     </AlertDialog>
   );
 }
-
 function LoadingScreen() {
   return (
     <div className="fixed inset-0 flex items-center justify-center">
