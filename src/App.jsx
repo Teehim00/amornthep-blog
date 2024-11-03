@@ -1,30 +1,26 @@
-import { useState } from "react";
-import reactLogo from "./assets/react.svg";
-import viteLogo from "/vite.svg";
-import "./App.css";
-import { NavBar, HeroSection } from "./components/NavBar";
-import { Footer } from "./components/Footer";
-import ArticleSection from './components/ArticleSection'; 
-
-
-
-
+import { BrowserRouter as Router, Route, Routes } from "react-router-dom";
+import HomePage from "./page/HomePage";
+import ViewPostPage from "./page/ViewPostPage";
+import { Toaster } from "@/components/ui/sonner";
+import NotFoundPage from "./page/NotFoundPage";
 
 function App() {
-  const [count, setCount] = useState(0);
-
   return (
-    <>
-      <NavBar />
-      <HeroSection />
-      <ArticleSection/>
-      <Footer />     
-    </>
+    <div className="App">
+      <Router>
+        <Routes>
+          <Route path="/" element={<HomePage />} />
+          <Route path="/:postId" element={<ViewPostPage />} />
+          <Route path="*" element={<NotFoundPage />} />
+        </Routes>
+      </Router>
+      <Toaster
+        toastOptions={{
+          unstyled: true,
+        }}
+      />
+    </div>
   );
 }
 
-
-
 export default App;
-
-

@@ -1,3 +1,4 @@
+/* eslint-disable react/prop-types */
 
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -11,7 +12,8 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-
+import { Link } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 
 function BlogCard({
   image,
@@ -21,27 +23,28 @@ function BlogCard({
   author,
   date,
   authorImage,
+  postId,
 }) {
   return (
     <div className="flex flex-col gap-4">
-      <a href="#" className="relative h-[212px] sm:h-[360px]">
+      <Link to={`/${postId}`} className="relative h-[212px] sm:h-[360px]">
         <img
           className="w-full h-full object-cover rounded-md"
           src={image}
           alt={title}
         />
-      </a>
+      </Link>
       <div className="flex flex-col">
         <div className="flex">
           <span className="bg-green-200 rounded-full px-3 py-1 text-sm font-semibold text-green-600 mb-2">
             {category}
           </span>
         </div>
-        <a href="#">
+        <Link to={`/${postId}`}>
           <h2 className="font-bold text-xl mb-2 line-clamp-2 hover:underline">
             {title}
           </h2>
-        </a>
+        </Link>
         <p className="text-muted-foreground text-sm mb-4 flex-grow line-clamp-3">
           {description}
         </p>
@@ -60,26 +63,60 @@ function BlogCard({
   );
 }
 
-const categories = ["Highlight", "Cat", "Inspiration", "General"];
-
-function ArticleSection() {
+const ArticleSection = () => {
+  const categories = ["Highlight", "Cat", "Inspiration", "General"];
   const [buttonCategories, setButtonCategories] = useState("");
   const [category, setCategory] = useState("Highlight");
   const [posts, setPosts] = useState([]);
+  const [allPosts, setAllPosts] = useState([]);
+  const [searchKeyword, setSearchKeyword] = useState("");
+  const [suggestions, setSuggestions] = useState([]);
+  const [showDropdown, setShowDropdown] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
+
+  const navigate = useNavigate();
 
   useEffect(() => {
     fetchPosts();
   }, []);
+
   const fetchPosts = async () => {
     try {
       const response = await axios.get(
         `https://blog-post-project-api.vercel.app/posts`
       );
       setPosts(response.data.posts);
+      setAllPosts(response.data.posts);
     } catch (error) {
       console.log(error);
     }
   };
+
+  useEffect(() => {
+    const filteredPosts = allPosts.filter((post) => post.category === category);
+    setPosts(filteredPosts.length > 0 ? filteredPosts : allPosts);
+  }, [category, allPosts]);
+
+  useEffect(() => {
+    if (searchKeyword.length > 0) {
+      setIsLoading(true);
+      const fetchSuggestions = async () => {
+        try {
+          const response = await axios.get(
+            `https://blog-post-project-api.vercel.app/posts?keyword=${searchKeyword}`
+          );
+          setSuggestions(response.data.posts); // Set search suggestions
+          setIsLoading(false);
+        } catch (error) {
+          console.log(error);
+          setIsLoading(false);
+        }
+      };
+      fetchSuggestions();
+    } else {
+      setSuggestions([]); // Clear suggestions if keyword is empty
+    }
+  }, [searchKeyword]);
 
   return (
     <>
@@ -93,15 +130,18 @@ function ArticleSection() {
                   {categories.map((label) => (
                     <Button
                       key={label}
-                      onClick={() =>
-                        buttonCategories !== label && setButtonCategories(label)
-                      }
+                      onClick={() => {
+                        if (buttonCategories !== label) {
+                          setButtonCategories(label);
+                          setCategory(label);
+                        }
+                      }}
                       className={`"px-4 py-3 transition-colors rounded-sm text-sm "
-                      ${
-                        buttonCategories === label
-                          ? "bg-[#DAD6D1] text-[#43403B]"
-                          : "bg-[#F0F0F0] hover:bg-[#D3D3D3] text-[#43403B]"
-                      }`}
+            ${
+              buttonCategories === label
+                ? "bg-[#DAD6D1] text-[#43403B]"
+                : "bg-[#F0F0F0] hover:bg-[#D3D3D3] text-[#43403B]"
+            }`}
                     >
                       {label}
                     </Button>
@@ -113,7 +153,30 @@ function ArticleSection() {
                   type="text"
                   placeholder="Search"
                   className="py-3 rounded-sm placeholder:text-muted-foreground focus-visible:ring-0 focus-visible:ring-offset-0 focus-visible:border-muted-foreground"
+                  onChange={(e) => setSearchKeyword(e.target.value)}
+                  onFocus={() => setShowDropdown(true)}
+                  onBlur={() => {
+                    setTimeout(() => {
+                      setShowDropdown(false);
+                    }, 200);
+                  }}
                 />
+                {!isLoading &&
+                  showDropdown &&
+                  searchKeyword &&
+                  suggestions.length > 0 && (
+                    <div className="absolute z-10 w-full mt-2 bg-background rounded-sm shadow-lg p-1">
+                      {suggestions.map((suggestion, index) => (
+                        <button
+                          key={index}
+                          className="text-start px-4 py-2 block w-full text-sm text-foreground hover:bg-[#EFEEEB] hover:text-muted-foreground hover:rounded-sm cursor-pointer"
+                          onClick={() => navigate(`/post/${suggestion.id}`)}
+                        >
+                          {suggestion.title}
+                        </button>
+                      ))}
+                    </div>
+                  )}
                 <div className="absolute inset-y-0 right-0 flex items-center pr-3">
                   <BiSearch className="text-gray-400" />
                 </div>
@@ -174,6 +237,8 @@ function ArticleSection() {
                   month: "long",
                   year: "numeric",
                 })}
+                authorImage={blog.authorImage}
+                postId={blog.id} // สมมติว่า blog.id คือ ID ของโพสต์
               />
             );
           })}
@@ -181,5 +246,5 @@ function ArticleSection() {
       </div>
     </>
   );
-}
+};
 export default ArticleSection;
