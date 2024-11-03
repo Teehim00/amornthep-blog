@@ -170,7 +170,7 @@ const ArticleSection = () => {
                         <button
                           key={index}
                           className="text-start px-4 py-2 block w-full text-sm text-foreground hover:bg-[#EFEEEB] hover:text-muted-foreground hover:rounded-sm cursor-pointer"
-                          onClick={() => navigate(`/post/${suggestion.id}`)}
+                          onClick={() => navigate(`/${suggestion.id}`)}
                         >
                           {suggestion.title}
                         </button>
